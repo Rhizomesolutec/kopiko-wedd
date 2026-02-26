@@ -5,21 +5,6 @@ body {
   color: #333;
 }
 
-/* Header with logo always visible */
-header {
-  text-align: center;
-  padding: 30px 20px;
-  background: #f8f0f5;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-.logo {
-  width: 100px;
-  margin-bottom: 10px;
-}
-
 /* Hero section */
 .hero {
   position: relative;
@@ -29,23 +14,32 @@ header {
 .hero img {
   width: 100%;
   height: auto;
+  display: block;
 }
 
+/* Centered logo overlay in hero */
 .hero-text {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: white;
-  background: rgba(0,0,0,0.5);
-  padding: 20px;
-  border-radius: 8px;
+}
+
+.hero-logo {
+  width: 150px;
+  display: block;
+  margin: 0 auto;
 }
 
 /* Services section */
 .services {
   padding: 40px 20px;
   text-align: center;
+}
+
+.services h2 {
+  margin-bottom: 20px;
+  font-size: 1.8em;
 }
 
 .service-grid {
@@ -55,20 +49,19 @@ header {
   gap: 20px;
 }
 
-/* Show only 4 cards */
+/* Service cards styled like Instagram story size */
 .service-card {
   width: 300px;
-  height: auto;
   background: #f9f9f9;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: left;
 }
 
-/* Instagram-style square images */
 .service-card img {
   width: 100%;
-  height: 300px;
+  height: 500px; /* Instagram story style vertical rectangle */
   object-fit: cover;
 }
 
@@ -88,6 +81,15 @@ header {
   padding: 40px 20px;
   text-align: center;
   background: #f8f0f5;
+}
+
+.contact h2 {
+  margin-bottom: 10px;
+}
+
+.contact p {
+  margin-bottom: 20px;
+  color: #555;
 }
 
 form {
