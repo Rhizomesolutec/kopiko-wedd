@@ -5,16 +5,22 @@ body {
   color: #333;
 }
 
+/* Header with logo always visible */
 header {
   text-align: center;
-  padding: 40px 20px;
+  padding: 30px 20px;
   background: #f8f0f5;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .logo {
   width: 100px;
+  margin-bottom: 10px;
 }
 
+/* Hero section */
 .hero {
   position: relative;
   text-align: center;
@@ -36,6 +42,7 @@ header {
   border-radius: 8px;
 }
 
+/* Services section */
 .services {
   padding: 40px 20px;
   text-align: center;
@@ -45,21 +52,23 @@ header {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 20px;
 }
 
+/* Show only 4 cards */
 .service-card {
-  width: 280px;
-  margin: 20px;
-  text-align: left;
+  width: 300px;
+  height: auto;
   background: #f9f9f9;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
+/* Instagram-style square images */
 .service-card img {
   width: 100%;
-  height: 180px;
+  height: 300px;
   object-fit: cover;
 }
 
@@ -74,6 +83,43 @@ header {
   color: #555;
 }
 
+/* Contact section */
+.contact {
+  padding: 40px 20px;
+  text-align: center;
+  background: #f8f0f5;
+}
+
+form {
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+form input, form textarea {
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1em;
+}
+
+form button {
+  background: #d46a92;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+form button:hover {
+  background: #b94f78;
+}
+
+/* Footer */
 footer {
   text-align: center;
   padding: 20px;
