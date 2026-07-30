@@ -101,7 +101,7 @@ export default function FeaturedStories() {
   }, []);
 
   return (
-    <section id="stories" className="py-28 md:py-36 bg-[#464239] text-white relative">
+    <section id="stories" className="py-28 md:py-36 bg-[#565146] text-white relative">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-20">
@@ -189,7 +189,7 @@ export default function FeaturedStories() {
                   </button>
 
                   {/* Slide Indicators / Dots */}
-                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-20 bg-black/35 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10">
+                  <div className="absolute bottom-6 right-6 flex gap-1.5 z-20 bg-black/35 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10">
                     {story.images.map((_, i) => (
                       <button
                         key={i}
@@ -204,26 +204,49 @@ export default function FeaturedStories() {
                     ))}
                   </div>
 
+                  {/* Floating Couple Name Plate */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                    className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 z-20 pointer-events-none"
+                  >
+                    <h3 className="font-serif-primary text-lg sm:text-3xl font-light tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
+                      {story.couple}
+                    </h3>
+                  </motion.div>
+
                   {/* Location Pin Badge */}
-                  <div className="absolute top-6 left-6 px-4 py-2 rounded-full glass-panel-taupe-dark text-[10px] uppercase tracking-[0.2em] text-white flex items-center gap-2 border border-white/15 font-sans-clean z-20 pointer-events-none">
+                  <motion.div
+                    initial={{ opacity: 0, y: -15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
+                    className="absolute top-6 left-6 text-[10px] uppercase tracking-[0.2em] text-white flex items-center gap-2 font-sans-clean z-20 pointer-events-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]"
+                  >
                     <MapPin className="w-3.5 h-3.5" />
                     <span>{story.location}</span>
-                  </div>
+                  </motion.div>
                 </div>
 
                 {/* Narrative Details */}
                 <div className="w-full lg:w-2/5 flex flex-col items-start text-left">
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-white font-sans-clean mb-3">
-                    <Calendar className="w-3.5 h-3.5" /> {story.date}
+                  {/* Chapter Index & Date */}
+                  <div className="flex items-center gap-4 mb-6">
+                    <span className="font-serif-primary text-5xl md:text-6xl text-white/20 font-extralight select-none leading-none">
+                      0{index + 1}
+                    </span>
+                    <div className="h-[1px] w-8 bg-white/20" />
+                    <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-zinc-300 font-sans-clean">
+                      <Calendar className="w-3.5 h-3.5" /> {story.date}
+                    </div>
                   </div>
-                  <h3 className="font-serif-primary text-4xl md:text-5xl font-light text-white mb-6">
-                    {story.couple}
-                  </h3>
 
                   {/* Quote Block */}
-                  <div className="relative border-l-2 border-white/80 pl-6 my-4">
-                    <Quote className="w-6 h-6 text-white/40 absolute -top-3 left-3 -z-10" />
-                    <p className="font-serif-italic text-lg md:text-xl text-zinc-100 italic leading-relaxed">
+                  <div className="relative border-l border-white/30 pl-6 my-4">
+                    <Quote className="w-4 h-4 text-white/40 absolute -top-2 left-3 -z-10" />
+                    <p className="font-sans-clean text-xs uppercase tracking-[0.25em] font-semibold text-zinc-200 leading-relaxed">
                       "{story.quote}"
                     </p>
                   </div>

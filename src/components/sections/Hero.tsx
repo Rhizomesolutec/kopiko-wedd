@@ -10,10 +10,10 @@ interface HeroProps {
 }
 
 const heroImages = [
-  "/showcase/DSC03000.jpg",
   "/showcase/North indian/YCM00354.jpg",
-  "/showcase/Traditional Wedd/KOPIKO WEDD.IN-117.jpg",
   "/showcase/Pre-Wedding/ASD07384.jpg",
+  "/showcase/Traditional Wedd/KOPIKO WEDD.IN-117.jpg",
+  "/showcase/DSC03000.jpg",
   "/showcase/DSC02586.jpg",
 ];
 
@@ -67,7 +67,13 @@ export default function Hero({ onOpenBooking }: HeroProps) {
               fill
               priority={idx === 0}
               quality={95}
-              className="object-cover object-[center_18%] filter brightness-[0.82] contrast-[1.03]"
+              className={`object-cover filter brightness-[0.82] contrast-[1.03] ${
+                idx === 2 || idx === 4
+                  ? "object-[center_18%] md:object-[center_50%]"
+                  : idx === 3
+                  ? "object-[center_18%] md:object-[center_75%]"
+                  : "object-[center_18%]"
+              }`}
             />
           </motion.div>
         ))}

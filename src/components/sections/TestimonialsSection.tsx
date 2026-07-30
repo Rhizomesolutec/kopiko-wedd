@@ -265,7 +265,7 @@ export default function TestimonialsSection() {
                       />
                     ))}
                   </div>
-                  <p className="font-serif-primary text-lg text-zinc-100 font-light leading-relaxed mb-6">
+                  <p className="font-sans-clean text-xs md:text-sm text-zinc-300 leading-relaxed font-light mb-6">
                     "{review.quote}"
                   </p>
                 </div>

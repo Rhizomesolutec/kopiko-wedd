@@ -1,125 +1,149 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Aperture, Sparkles } from "lucide-react";
 
 export default function AppleScrollStory() {
-  const targetRef = useRef<HTMLDivElement>(null);
+  const [activeIdx, setActiveIdx] = useState(0);
 
-  const { scrollYProgress } = useScroll({
-    target: targetRef,
-    offset: ["start start", "end end"],
-  });
+  const slides = [
+    {
+      id: 0,
+      image: "/showcase/Traditional Wedd/DSC09570.jpg",
+      tag: "SACRED HERITAGE",
+      title: <>Traditional <br /> Grandeur</>,
+      layoutClass: "items-start justify-start text-left",
+      tagClass: "justify-start",
+      positionClass: "object-center",
+    },
+    {
+      id: 1,
+      image: "/showcase/Pre-Wedding/ASD06285.jpg",
+      tag: "POETIC ROMANCE",
+      title: <>Framing Love <br /> As Art</>,
+      layoutClass: "items-start justify-end text-left",
+      tagClass: "justify-start",
+      positionClass: "object-center",
+    },
+    {
+      id: 2,
+      image: "/showcase/Pre-Wedding/AJI04083.jpg",
+      tag: "CINEMATIC ESSENCE",
+      title: <>Timeless <br /> Portraits</>,
+      layoutClass: "items-end justify-start text-right",
+      tagClass: "justify-end",
+      positionClass: "object-[center_85%]",
+    },
+  ];
 
-  const scaleCard = useTransform(scrollYProgress, [0, 0.5, 1], [0.92, 1, 0.96]);
-  const imageOpacity1 = useTransform(scrollYProgress, [0, 0.35, 0.45], [1, 1, 0]);
-  const imageOpacity2 = useTransform(scrollYProgress, [0.45, 0.5, 0.8], [0, 1, 0]);
-  const imageOpacity3 = useTransform(scrollYProgress, [0.8, 0.85, 1], [0, 1, 1]);
-
-  const textOpacity1 = useTransform(scrollYProgress, [0, 0.25, 0.35], [1, 1, 0]);
-  const textOpacity2 = useTransform(scrollYProgress, [0.35, 0.5, 0.75], [0, 1, 0]);
-  const textOpacity3 = useTransform(scrollYProgress, [0.75, 0.85, 1], [0, 1, 1]);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIdx((prev) => (prev + 1) % slides.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <section ref={targetRef} className="relative h-[300vh] bg-[#2d2a24] text-white">
-      {/* Sticky Container */}
-      <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden p-6 md:p-12">
-        {/* Viewfinder Card */}
-        <motion.div
-          style={{ scale: scaleCard }}
-          className="relative w-full max-w-6xl h-[85vh] rounded-3xl overflow-hidden shadow-2xl border border-white/15 bg-[#464239]"
-        >
-          {/* Layer 1 Image */}
-          <motion.div style={{ opacity: imageOpacity1 }} className="absolute inset-0">
-            <Image
-              src="/showcase/Traditional Wedd/KOPIKO WEDD.IN-117.jpg"
-              alt="Traditional Royal Wedding Ceremony"
-              fill
-              priority
-              className="object-cover filter brightness-[0.72]"
-            />
-          </motion.div>
+    <section className="py-24 md:py-32 bg-[#2d2a24] text-white flex items-center justify-center px-6 md:px-12 relative border-b border-white/5">
+      {/* Viewfinder Card */}
+      <div className="relative w-full max-w-6xl h-[85vh] rounded-3xl overflow-hidden shadow-2xl border border-white/15 bg-[#464239]">
+        {/* Continuous Looping Slider Stack */}
+        {slides.map((slide, idx) => {
+          const isActive = idx === activeIdx;
+          const isPrevious = idx === (activeIdx - 1 + slides.length) % slides.length;
+          
+          let xValue = "100%";
+          if (isActive) {
+            xValue = "0%";
+          } else if (isPrevious) {
+            xValue = "-100%";
+          }
 
-          {/* Layer 2 Image */}
-          <motion.div style={{ opacity: imageOpacity2 }} className="absolute inset-0">
-            <Image
-              src="/showcase/North indian/YCM00193.jpg"
-              alt="North Indian Grand Wedding"
-              fill
-              className="object-cover filter brightness-[0.72]"
-            />
-          </motion.div>
+          let imageXValue = "-18%";
+          if (isActive) {
+            imageXValue = "0%";
+          } else if (isPrevious) {
+            imageXValue = "18%";
+          }
 
-          {/* Layer 3 Image */}
-          <motion.div style={{ opacity: imageOpacity3 }} className="absolute inset-0">
-            <Image
-              src="/showcase/Pre-Wedding/ASD06285.jpg"
-              alt="Editorial Pre-Wedding Vignette"
-              fill
-              className="object-cover filter brightness-[0.72]"
-            />
-          </motion.div>
+          const isVisible = isActive || isPrevious;
 
-          {/* Vignette Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#2d2a24]/90 via-transparent to-[#2d2a24]/60 pointer-events-none" />
+          return (
+            <motion.div
+              key={slide.id}
+              initial={false}
+              animate={{
+                x: xValue,
+                opacity: isVisible ? 1 : 0
+              }}
+              transition={{
+                x: { duration: 1.4, ease: [0.76, 0, 0.24, 1] },
+                opacity: { duration: 0.4 }
+              }}
+              className="absolute inset-0 w-full h-full overflow-hidden"
+              style={{
+                zIndex: isActive ? 10 : 5,
+                pointerEvents: isActive ? "auto" : "none",
+              }}
+            >
+              {/* Parallax Image */}
+              <motion.div
+                animate={{ x: imageXValue }}
+                transition={{ duration: 1.4, ease: [0.76, 0, 0.24, 1] }}
+                className="absolute inset-0 w-[120%] h-full -left-[10%]"
+              >
+                <Image
+                  src={slide.image}
+                  alt={slide.tag}
+                  fill
+                  className={`object-cover filter brightness-[0.72] ${slide.positionClass}`}
+                  priority={idx === 0}
+                />
+              </motion.div>
 
-          {/* Leica Viewfinder Frame HUD */}
-          <div className="absolute inset-6 md:inset-10 border border-white/30 rounded-2xl pointer-events-none p-6 flex flex-col justify-between z-10">
-            <div className="flex justify-between items-center text-[10px] uppercase tracking-[0.3em] text-white/80 font-sans-clean">
-              <span className="flex items-center gap-1.5"><Camera className="w-3.5 h-3.5" /> LEICA M11 MONOCHROM</span>
-              <span>KOPIKO REEL</span>
-            </div>
+              {/* Text Content Overlay */}
+              <div className={`absolute inset-0 flex flex-col px-8 py-14 md:p-20 z-20 ${slide.layoutClass}`}>
+                <motion.div
+                  animate={{
+                    opacity: isActive ? 1 : 0,
+                    y: isActive ? 0 : 25,
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    delay: isActive ? 0.5 : 0,
+                    ease: "easeOut",
+                  }}
+                  className="flex flex-col"
+                >
+                  <span className={`text-[10px] uppercase tracking-[0.35em] text-white mb-2 font-sans-clean flex items-center gap-1.5 ${slide.tagClass}`}>
+                    <Sparkles className="w-3 h-3 text-white" /> {slide.tag}
+                  </span>
+                  <h2 className="font-serif-primary text-2xl sm:text-5xl md:text-6xl font-light tracking-wide text-white leading-tight">
+                    {slide.title}
+                  </h2>
+                </motion.div>
+              </div>
+            </motion.div>
+          );
+        })}
 
-            <div className="flex justify-between items-center text-[10px] uppercase tracking-[0.3em] text-white/80 font-sans-clean">
-              <span className="flex items-center gap-1.5"><Aperture className="w-3.5 h-3.5" /> 50mm f/1.2 NOCTILUX</span>
-              <span>1/8000s • ISO 64</span>
-            </div>
+        {/* Vignette Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#2d2a24]/90 via-transparent to-[#2d2a24]/60 pointer-events-none z-10" />
+
+        {/* Leica Viewfinder Frame HUD */}
+        <div className="absolute inset-4 md:inset-10 border border-white/30 rounded-2xl pointer-events-none p-4 md:p-6 flex flex-col justify-between z-10">
+          <div className="flex justify-between items-center text-[8px] md:text-[10px] uppercase tracking-[0.3em] text-white/80 font-sans-clean">
+            <span className="flex items-center gap-1 sm:gap-1.5"><Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> LEICA M11 MONOCHROM</span>
+            <span>KOPIKO REEL</span>
           </div>
 
-          {/* Story Slide 1 Content - TOP LEFT ALIGNED */}
-          <motion.div
-            style={{ opacity: textOpacity1 }}
-            className="absolute inset-0 flex flex-col items-start justify-start p-10 md:p-20 text-left z-20"
-          >
-            <span className="text-[10px] uppercase tracking-[0.35em] text-white mb-2 font-sans-clean flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-white" /> SACRED HERITAGE
-            </span>
-            <h2 className="font-serif-primary text-4xl sm:text-5xl md:text-6xl font-light tracking-wide text-white">
-              Traditional <br />
-              Grandeur
-            </h2>
-          </motion.div>
-
-          {/* Story Slide 2 Content - BOTTOM RIGHT ALIGNED */}
-          <motion.div
-            style={{ opacity: textOpacity2 }}
-            className="absolute inset-0 flex flex-col items-end justify-end p-10 md:p-20 text-right z-20"
-          >
-            <span className="text-[10px] uppercase tracking-[0.35em] text-white mb-2 font-sans-clean flex items-center gap-1.5 justify-end">
-              <Sparkles className="w-3 h-3 text-white" /> VIBRANT CELEBRATIONS
-            </span>
-            <h2 className="font-serif-primary text-4xl sm:text-5xl md:text-6xl font-light tracking-wide text-white">
-              Unscripted <br />
-              Royalty
-            </h2>
-          </motion.div>
-
-          {/* Story Slide 3 Content - BOTTOM LEFT ALIGNED */}
-          <motion.div
-            style={{ opacity: textOpacity3 }}
-            className="absolute inset-0 flex flex-col items-start justify-end p-10 md:p-20 text-left z-20"
-          >
-            <span className="text-[10px] uppercase tracking-[0.35em] text-white mb-2 font-sans-clean flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-white" /> POETIC ROMANCE
-            </span>
-            <h2 className="font-serif-primary text-4xl sm:text-5xl md:text-6xl font-light tracking-wide text-white">
-              Framing Love <br />
-              As Art
-            </h2>
-          </motion.div>
-        </motion.div>
+          <div className="flex justify-between items-center text-[8px] md:text-[10px] uppercase tracking-[0.3em] text-white/80 font-sans-clean">
+            <span className="flex items-center gap-1 sm:gap-1.5"><Aperture className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> 50mm f/1.2 NOCTILUX</span>
+            <span>1/8000s • ISO 64</span>
+          </div>
+        </div>
       </div>
     </section>
   );

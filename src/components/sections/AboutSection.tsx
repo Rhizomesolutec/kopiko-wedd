@@ -3,7 +3,25 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Camera, Sparkles, Award } from "lucide-react";
+import { Camera, Sparkles, Award, ArrowUpRight } from "lucide-react";
+
+function InstagramIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+    </svg>
+  );
+}
 
 export default function AboutSection() {
   return (
@@ -54,7 +72,7 @@ export default function AboutSection() {
             </span>
 
             <h2 className="font-serif-primary text-4xl sm:text-5xl md:text-6xl font-light tracking-tight text-zinc-900 leading-tight mb-8">
-              Documenting Love with Poetic Elegance & Unspoken Depth
+              Documenting Love & Growing Families
             </h2>
 
             <p className="font-sans-clean text-xs md:text-sm text-zinc-700 leading-relaxed tracking-wide font-light mb-6">
@@ -62,7 +80,7 @@ export default function AboutSection() {
             </p>
 
             <p className="font-sans-clean text-xs md:text-sm text-zinc-700 leading-relaxed tracking-wide font-light mb-8">
-              Our work has been featured across premier luxury wedding publications worldwide, celebrated for timeless color grading, natural skin tones, and framing love as art.
+              Our work has been featured across premier luxury wedding publications worldwide. Beyond wedding narratives, we capture maternity, family, and childhood milestones through our sister brand, <a href="https://www.instagram.com/p/DZ7BvV1E6aG/?igsh=MTlmNWtkaWF1ZmFsMw==" target="_blank" rel="noopener noreferrer" className="text-[#8c826b] hover:text-[#5e594d] underline font-semibold transition-colors">kopikokidd</a>, framing every new chapter with the same artistic depth.
             </p>
 
             {/* Accolade Badges */}
@@ -92,14 +110,35 @@ export default function AboutSection() {
               </div>
             </div>
 
-            {/* Signature Graphic Mockup */}
-            <div className="flex flex-col items-start pt-2">
-              <span className="font-serif-italic text-3xl text-[#3a372f] tracking-wider">
-                Kopiko Wedding Studio
-              </span>
-              <span className="text-[9px] uppercase tracking-[0.3em] text-[#8c826b] font-sans-clean mt-1">
-                Founders & Principal Directors
-              </span>
+            {/* Bottom Row: Signature & Instagram Card */}
+            <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 pt-6 border-t border-[#c7beab]/30 mt-6">
+              {/* Signature Graphic Mockup */}
+              <div className="flex flex-col items-start">
+                <span className="font-serif-italic text-3xl text-[#3a372f] tracking-wider">
+                  Kopiko Wedding Studio
+                </span>
+              </div>
+
+              {/* Instagram Card for kopikokidd */}
+              <a
+                href="https://www.instagram.com/p/DZ7BvV1E6aG/?igsh=MTlmNWtkaWF1ZmFsMw=="
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-3 p-2.5 pr-4 rounded-xl bg-[#edeadf]/80 hover:bg-[#e4e1d5] border border-[#c7beab]/50 transition-all duration-300 shadow-sm max-w-[240px] hover:-translate-y-0.5"
+              >
+                <div className="w-8 h-8 rounded-lg bg-[#5e594d] flex items-center justify-center text-amber-100 group-hover:bg-[#8c826b] transition-colors duration-300">
+                  <InstagramIcon className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-sans-clean uppercase tracking-wider text-[#8c826b] font-semibold">
+                    Sister Studio
+                  </span>
+                  <span className="text-xs font-sans-clean font-bold text-zinc-950 flex items-center gap-1">
+                    @kopikokidd
+                    <ArrowUpRight className="w-3 h-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
+                  </span>
+                </div>
+              </a>
             </div>
           </div>
         </div>

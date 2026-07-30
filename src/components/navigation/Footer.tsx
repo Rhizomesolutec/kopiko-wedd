@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
-import { formatTime } from "@/lib/utils";
 import { ArrowUp, Send } from "lucide-react";
 
 interface FooterProps {
@@ -10,25 +9,6 @@ interface FooterProps {
 }
 
 export default function Footer({ onOpenBooking }: FooterProps) {
-  const [timeLondon, setTimeLondon] = useState("");
-  const [timeParis, setTimeParis] = useState("");
-  const [timeNY, setTimeNY] = useState("");
-  const [timeMumbai, setTimeMumbai] = useState("");
-
-  useEffect(() => {
-    const updateClocks = () => {
-      const now = new Date();
-      setTimeLondon(formatTime(now, "Europe/London"));
-      setTimeParis(formatTime(now, "Europe/Paris"));
-      setTimeNY(formatTime(now, "America/New_York"));
-      setTimeMumbai(formatTime(now, "Asia/Kolkata"));
-    };
-
-    updateClocks();
-    const interval = setInterval(updateClocks, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -36,50 +16,26 @@ export default function Footer({ onOpenBooking }: FooterProps) {
   return (
     <footer className="bg-[#2d2a24] text-white pt-24 pb-12 border-t border-white/10 px-6 md:px-12 relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        {/* World Timezones Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pb-16 border-b border-white/15 text-center sm:text-left">
-          <div>
-            <span className="text-[10px] uppercase tracking-[0.25em] text-amber-200/60 font-sans-clean block">
-              London, UK
-            </span>
-            <span className="font-serif-primary text-xl text-amber-200">{timeLondon || "12:00:00"}</span>
-          </div>
-
-          <div>
-            <span className="text-[10px] uppercase tracking-[0.25em] text-amber-200/60 font-sans-clean block">
-              Paris, FR
-            </span>
-            <span className="font-serif-primary text-xl text-amber-200">{timeParis || "13:00:00"}</span>
-          </div>
-
-          <div>
-            <span className="text-[10px] uppercase tracking-[0.25em] text-amber-200/60 font-sans-clean block">
-              New York, US
-            </span>
-            <span className="font-serif-primary text-xl text-amber-200">{timeNY || "07:00:00"}</span>
-          </div>
-
-          <div>
-            <span className="text-[10px] uppercase tracking-[0.25em] text-amber-200/60 font-sans-clean block">
-              Mumbai, IN
-            </span>
-            <span className="font-serif-primary text-xl text-amber-200">{timeMumbai || "16:30:00"}</span>
-          </div>
-        </div>
-
         {/* Main Footer Layout */}
         <div className="py-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Brand & Mission */}
           <div className="lg:col-span-5 flex flex-col items-start">
-            <div className="flex items-center gap-3.5 mb-4">
-              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-amber-200/40 shadow-md">
-                <Image src="/showcase/kopiko-logo.jpeg" alt="KOPIKO" fill className="object-cover" />
+            <div className="flex items-center gap-3.5 mb-6">
+              {/* Rounded Logo Symbol */}
+              <div className="relative w-11 h-11 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-amber-200/40 shadow-md shrink-0">
+                <Image
+                  src="/showcase/kopiko-logo.jpeg"
+                  alt="KOPIKO Symbol"
+                  fill
+                  className="object-cover"
+                />
               </div>
-              <div className="flex flex-col">
-                <span className="font-serif-primary text-2xl tracking-[0.18em] text-white uppercase">
-                  KOPIKO
-                </span>
-                <span className="text-[10px] tracking-[0.25em] text-amber-200/80 font-serif-italic italic -mt-1 lowercase">
+              {/* Horizontal Logo Wordmark & Tagline Group */}
+              <div className="flex flex-col items-start gap-1">
+                <div className="relative w-32 h-[30px]">
+                  <Image src="/showcase/kopiko.png" alt="KOPIKO" fill className="object-contain" />
+                </div>
+                <span className="text-[9px] tracking-[0.25em] text-zinc-400 uppercase font-sans-clean font-light pl-1 -mt-0.5">
                   framing love as art.
                 </span>
               </div>

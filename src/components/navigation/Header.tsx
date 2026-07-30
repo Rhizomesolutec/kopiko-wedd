@@ -43,23 +43,26 @@ export default function Header({ onOpenBooking }: HeaderProps) {
       >
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-3.5 group relative z-10">
-            <div className="relative w-11 h-11 md:w-12 md:h-12 rounded-full overflow-hidden border-2 border-amber-200/40 shadow-md transition-transform duration-500 group-hover:scale-105">
+          <a href="#" className="flex items-center gap-3.5 group relative z-10" aria-label="KOPIKO Weddings Home">
+            {/* Rounded Logo Symbol */}
+            <div className="relative w-10 h-10 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-amber-200/40 shadow-md transition-transform duration-500 group-hover:scale-105 shrink-0">
               <Image
                 src="/showcase/kopiko-logo.jpeg"
-                alt="KOPIKO Weddings Logo"
+                alt="KOPIKO symbol"
                 fill
                 className="object-cover"
                 priority
               />
             </div>
-            <div className="flex flex-col">
-              <span className="font-serif-primary text-xl md:text-2xl tracking-[0.18em] font-semibold text-white uppercase">
-                KOPIKO
-              </span>
-              <span className="text-[9px] tracking-[0.3em] text-amber-200/80 uppercase font-sans-clean -mt-1 font-light">
-                Framing love as art
-              </span>
+            {/* Horizontal Logo Wordmark */}
+            <div className="relative w-28 h-7 md:w-32 md:h-8 transition-transform duration-300">
+              <Image
+                src="/showcase/kopiko.png"
+                alt="KOPIKO"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
           </a>
 
