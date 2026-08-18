@@ -8,12 +8,12 @@ import { Camera, Aperture, Sparkles } from "lucide-react";
 export default function AppleScrollStory() {
   const [activeIdx, setActiveIdx] = useState(0);
 
-  const slides = [
+  const fallbackSlides = [
     {
       id: 0,
       image: "/showcase/Traditional Wedd/DSC09570.jpg",
       tag: "SACRED HERITAGE",
-      title: <>Traditional <br /> Grandeur</>,
+      title: "Traditional\nGrandeur",
       layoutClass: "items-start justify-start text-left",
       tagClass: "justify-start",
       positionClass: "object-center",
@@ -22,7 +22,7 @@ export default function AppleScrollStory() {
       id: 1,
       image: "/showcase/Pre-Wedding/ASD06285.jpg",
       tag: "POETIC ROMANCE",
-      title: <>Framing Love <br /> As Art</>,
+      title: "Framing Love\nAs Art",
       layoutClass: "items-start justify-end text-left",
       tagClass: "justify-start",
       positionClass: "object-center",
@@ -31,19 +31,38 @@ export default function AppleScrollStory() {
       id: 2,
       image: "/showcase/Pre-Wedding/AJI04083.jpg",
       tag: "CINEMATIC ESSENCE",
-      title: <>Timeless <br /> Portraits</>,
+      title: "Timeless\nPortraits",
       layoutClass: "items-end justify-start text-right",
       tagClass: "justify-end",
       positionClass: "object-[center_85%]",
     },
   ];
 
+  const [slides, setSlides] = useState<any[]>(fallbackSlides);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await fetch("/api/slides");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            setSlides(data);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load slides:", error);
+      }
+    }
+    loadData();
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveIdx((prev) => (prev + 1) % slides.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   return (
     <section className="py-24 md:py-32 bg-[#2d2a24] text-white flex items-center justify-center px-6 md:px-12 relative border-b border-white/5">
@@ -71,8 +90,8 @@ export default function AppleScrollStory() {
           const isVisible = isActive || isPrevious;
 
           return (
+            <React.Fragment key={slide._id ?? slide.id ?? idx}>
             <motion.div
-              key={slide.id}
               initial={false}
               animate={{
                 x: xValue,
@@ -121,11 +140,21 @@ export default function AppleScrollStory() {
                     <Sparkles className="w-3 h-3 text-white" /> {slide.tag}
                   </span>
                   <h2 className="font-serif-primary text-2xl sm:text-5xl md:text-6xl font-light tracking-wide text-white leading-tight">
-                    {slide.title}
+                    {typeof slide.title === "string" ? (
+                      slide.title.split("\n").map((line: string, lIdx: number) => (
+                        <React.Fragment key={lIdx}>
+                          {line}
+                          {lIdx < slide.title.split("\n").length - 1 && <br />}
+                        </React.Fragment>
+                      ))
+                    ) : (
+                      slide.title
+                    )}
                   </h2>
                 </motion.div>
               </div>
             </motion.div>
+            </React.Fragment>
           );
         })}
 

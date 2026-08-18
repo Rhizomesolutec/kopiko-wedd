@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, ArrowRight, Quote, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface Story {
+  _id?: string;
   id: string;
   couple: string;
   location: string;
@@ -80,6 +81,7 @@ const storiesData: Story[] = [
 
 export default function FeaturedStories() {
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+  const [stories, setStories] = useState<Story[]>(storiesData);
   const [slideIndices, setSlideIndices] = useState<Record<string, number>>({
     s1: 0,
     s2: 0,
@@ -87,10 +89,36 @@ export default function FeaturedStories() {
   });
 
   useEffect(() => {
+    async function loadData() {
+      try {
+        const res = await fetch("/api/galleries");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            // Map MongoDB _id to id field for compatibility
+            const mapped = data
+              .filter((s: any) => !s.hidden)
+              .map((s: any) => ({ ...s, id: s._id || s.id }));
+            setStories(mapped);
+            const initialIndices: Record<string, number> = {};
+            mapped.forEach((story: Story) => {
+              initialIndices[story.id] = 0;
+            });
+            setSlideIndices(initialIndices);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load stories:", error);
+      }
+    }
+    loadData();
+  }, []);
+
+  useEffect(() => {
     const timer = setInterval(() => {
       setSlideIndices((prev) => {
         const nextIndices: Record<string, number> = {};
-        storiesData.forEach((story) => {
+        stories.forEach((story) => {
           const currentIdx = prev[story.id] ?? 0;
           nextIndices[story.id] = (currentIdx + 1) % story.images.length;
         });
@@ -98,7 +126,7 @@ export default function FeaturedStories() {
       });
     }, 2000);
     return () => clearInterval(timer);
-  }, []);
+  }, [stories]);
 
   return (
     <section id="stories" className="py-28 md:py-36 bg-[#565146] text-white relative">
@@ -120,12 +148,12 @@ export default function FeaturedStories() {
 
         {/* Story Cards List */}
         <div className="flex flex-col gap-24">
-          {storiesData.map((story, index) => {
+          {stories.map((story, index) => {
             const isReversed = index % 2 !== 0;
 
             return (
               <motion.div
-                key={story.id}
+                key={story._id ?? story.id ?? index}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -143,7 +171,7 @@ export default function FeaturedStories() {
                   <div className="absolute inset-0 w-full h-full">
                     <AnimatePresence initial={false}>
                       <motion.div
-                        key={slideIndices[story.id]}
+                        key={slideIndices[story._id ?? story.id]}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}

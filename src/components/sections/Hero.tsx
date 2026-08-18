@@ -20,6 +20,10 @@ const heroImages = [
 export default function Hero({ onOpenBooking }: HeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [settings, setSettings] = useState({
+    heroTitle: "Framing Love\nAs Art",
+    heroSubtitle: "Editorial Photography & Cinematic Stories Worldwide",
+  });
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -28,6 +32,26 @@ export default function Hero({ onOpenBooking }: HeroProps) {
 
   const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   const opacityContent = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const res = await fetch("/api/settings");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.heroTitle) {
+            setSettings({
+              heroTitle: data.heroTitle,
+              heroSubtitle: data.heroSubtitle || "",
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load settings:", error);
+      }
+    }
+    loadSettings();
+  }, []);
 
   // 3-Second Automatic Image Slide Interval
   useEffect(() => {
@@ -106,8 +130,12 @@ export default function Hero({ onOpenBooking }: HeroProps) {
           transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className="font-serif-primary text-3xl sm:text-5xl md:text-6xl lg:text-7xl tracking-[0.02em] font-light leading-[1.08] text-white max-w-3xl"
         >
-          Framing Love <br className="hidden sm:block" />
-          As Art
+          {settings.heroTitle.split("\n").map((line, lIdx) => (
+            <React.Fragment key={lIdx}>
+              {line}
+              {lIdx < settings.heroTitle.split("\n").length - 1 && <br className="hidden sm:block" />}
+            </React.Fragment>
+          ))}
         </motion.h1>
 
         <motion.p
@@ -116,7 +144,7 @@ export default function Hero({ onOpenBooking }: HeroProps) {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="font-sans-clean text-xs sm:text-sm tracking-[0.18em] text-zinc-200 max-w-md mt-6 leading-relaxed font-light uppercase"
         >
-          Editorial Photography & Cinematic Stories Worldwide
+          {settings.heroSubtitle}
         </motion.p>
 
         {/* Minimal Action CTAs */}

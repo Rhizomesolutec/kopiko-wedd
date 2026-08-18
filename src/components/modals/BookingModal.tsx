@@ -41,9 +41,43 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    
+    const nameParts = formData.name.split("&");
+    const bride = nameParts[0]?.trim() || formData.name;
+    const groom = nameParts[1]?.trim() || "Partner";
+
+    const payload = {
+      brideName: bride,
+      groomName: groom,
+      phone: formData.phone || "0000000000",
+      email: formData.email,
+      weddingDate: formData.weddingDate,
+      venue: formData.location,
+      package: formData.services.join(", ") || "Custom Package",
+      budget: formData.estimatedGuestCount || "Not Specified",
+      notes: formData.visionDetails,
+    };
+
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        const errData = await res.json();
+        alert(errData.error || "Failed to submit booking inquiry.");
+      }
+    } catch (error) {
+      console.error("Booking submission error:", error);
+      alert("Failed to submit inquiry due to network error.");
+    }
   };
 
   const handleReset = () => {
@@ -122,6 +156,21 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                           className="w-full px-4 py-3.5 rounded-xl bg-white/10 border border-white/15 text-white placeholder-zinc-400 focus:outline-none focus:border-amber-300 transition-colors text-sm"
                         />
                       </div>
+                    </div>
+
+                    {/* Phone Number Input */}
+                    <div className="flex flex-col gap-2">
+                      <label className="text-[11px] uppercase tracking-[0.2em] text-amber-200/80 font-sans-clean">
+                        Phone Number *
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="e.g. +91 95446 36566"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full px-4 py-3.5 rounded-xl bg-[#2d2a24]/50 border border-white/15 text-white placeholder-zinc-400 focus:outline-none focus:border-amber-300 transition-colors text-sm"
+                      />
                     </div>
 
                     {/* Wedding Date & Location */}

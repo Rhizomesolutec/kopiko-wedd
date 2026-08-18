@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Quote, ChevronLeft, ChevronRight, Star, X, Sparkles } from "lucide-react";
 
 export interface Testimonial {
+  _id?: string;
   id: string;
   quote: string;
   names: string;
@@ -15,11 +16,13 @@ export interface Testimonial {
 }
 
 export interface ClientReview {
+  _id?: string;
   id: string;
   names: string;
   venue: string;
   quote: string;
   rating: number;
+  hidden?: boolean;
 }
 
 const testimonialsData: Testimonial[] = [
@@ -75,6 +78,7 @@ const initialClientReviews: ClientReview[] = [
 
 export default function TestimonialsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(testimonialsData);
   const [clientReviews, setClientReviews] = useState<ClientReview[]>(initialClientReviews);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -87,33 +91,79 @@ export default function TestimonialsSection() {
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % testimonialsData.length);
-    }, 6500);
-    return () => clearInterval(timer);
+    async function loadData() {
+      try {
+        const res = await fetch("/api/reviews");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            setClientReviews(data);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load reviews:", error);
+      }
+    }
+    loadData();
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    }, 6500);
+    return () => clearInterval(timer);
+  }, [testimonials.length]);
+
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % testimonialsData.length);
+    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonialsData.length) % testimonialsData.length);
+    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formNames || !formVenue || !formQuote) return;
 
-    const newReview: ClientReview = {
-      id: `cr-${Date.now()}`,
+    const newReviewData = {
       names: formNames,
       venue: formVenue,
       quote: formQuote,
       rating: formRating,
     };
 
-    setClientReviews([newReview, ...clientReviews]);
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newReviewData),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.review) {
+          setClientReviews((prev) => [data.review, ...prev]);
+        }
+      } else {
+        const fallbackReview: ClientReview = {
+          id: `cr-${Date.now()}`,
+          ...newReviewData,
+          hidden: false
+        };
+        setClientReviews((prev) => [fallbackReview, ...prev]);
+      }
+    } catch (error) {
+      const fallbackReview: ClientReview = {
+        id: `cr-${Date.now()}`,
+        ...newReviewData,
+        hidden: false
+      };
+      setClientReviews((prev) => [fallbackReview, ...prev]);
+    }
+
     setIsSuccess(true);
 
     setTimeout(() => {
@@ -126,14 +176,14 @@ export default function TestimonialsSection() {
     }, 1800);
   };
 
-  const current = testimonialsData[currentIndex];
+  const current = testimonials[currentIndex];
 
   return (
     <section id="testimonials" className="py-28 md:py-36 bg-[#2d2a24] text-white relative overflow-hidden">
       {/* Background Image Fade */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={current.id}
+          key={current._id ?? current.id}
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.15 }}
           exit={{ opacity: 0 }}
@@ -167,7 +217,7 @@ export default function TestimonialsSection() {
           <div className="min-h-[220px] flex flex-col items-center justify-center">
             <AnimatePresence mode="wait">
               <motion.div
-                key={current.id}
+                key={current._id ?? current.id}
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -25 }}
@@ -202,7 +252,7 @@ export default function TestimonialsSection() {
 
             {/* Dots Indicator */}
             <div className="flex gap-2">
-              {testimonialsData.map((_, idx) => (
+              {testimonials.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentIndex(idx)}
@@ -243,9 +293,9 @@ export default function TestimonialsSection() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {clientReviews.map((review) => (
+            {clientReviews.filter((r) => !r.hidden).map((review, idx) => (
               <motion.div
-                key={review.id}
+                key={review._id ?? review.id ?? idx}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}

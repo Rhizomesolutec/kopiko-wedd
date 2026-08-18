@@ -1,16 +1,48 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { ArrowUp, Send } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface FooterProps {
   onOpenBooking: () => void;
 }
 
 export default function Footer({ onOpenBooking }: FooterProps) {
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    try {
+      const res = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "Journal Subscriber",
+          email,
+          phone: "0000000000",
+          message: "Subscribed to Private Journal Newsletter subscription.",
+        }),
+      });
+
+      if (res.ok) {
+        setSubscribed(true);
+        setEmail("");
+        toast.success("Subscribed successfully!");
+      } else {
+        toast.error("Failed to subscribe. Please try again.");
+      }
+    } catch (err) {
+      toast.error("Failed to subscribe due to connection error.");
+    }
   };
 
   return (
@@ -81,19 +113,28 @@ export default function Footer({ onOpenBooking }: FooterProps) {
             <p className="font-sans-clean text-xs text-zinc-300 font-light leading-relaxed mb-4">
               Receive curated travel guides, fine art print releases, and exclusive wedding insights.
             </p>
-            <form onSubmit={(e) => e.preventDefault()} className="w-full flex gap-2">
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                className="w-full px-4 py-3 rounded-full bg-white/10 border border-white/15 text-white placeholder-zinc-400 text-xs focus:outline-none focus:border-amber-300"
-              />
-              <button
-                type="submit"
-                className="p-3 rounded-full bg-amber-300 text-zinc-950 hover:bg-amber-200 transition-colors shrink-0"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </form>
+            {subscribed ? (
+              <p className="font-sans-clean text-xs text-amber-200/90 font-light mt-2 animate-pulse-slow">
+                ✓ Thank you for subscribing!
+              </p>
+            ) : (
+              <form onSubmit={handleSubscribe} className="w-full flex gap-2">
+                <input
+                  type="email"
+                  required
+                  placeholder="Enter your email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 rounded-full bg-white/10 border border-white/15 text-white placeholder-zinc-400 text-xs focus:outline-none focus:border-amber-300"
+                />
+                <button
+                  type="submit"
+                  className="p-3 rounded-full bg-amber-300 text-zinc-950 hover:bg-amber-200 transition-colors shrink-0"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </form>
+            )}
           </div>
         </div>
 

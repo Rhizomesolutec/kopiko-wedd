@@ -1,17 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, X, Film, Volume2, VolumeX, Sparkles } from "lucide-react";
 
 export interface FilmItem {
+  _id?: string;
   id: string;
   couple: string;
   location: string;
   duration: string;
   thumbnail: string;
   description: string;
+  videoUrl?: string;
+  hidden?: boolean;
 }
 
 const filmsData: FilmItem[] = [
@@ -35,7 +38,25 @@ const filmsData: FilmItem[] = [
 
 export default function WeddingFilms() {
   const [activeFilm, setActiveFilm] = useState<FilmItem | null>(null);
+  const [films, setFilms] = useState<FilmItem[]>(filmsData);
   const [isMuted, setIsMuted] = useState(false);
+
+  useEffect(() => {
+    async function loadFilms() {
+      try {
+        const res = await fetch("/api/films");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            setFilms(data);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load films:", error);
+      }
+    }
+    loadFilms();
+  }, []);
 
   return (
     <section id="films" className="py-28 md:py-36 bg-[#2d2a24] text-white relative overflow-hidden">
@@ -58,9 +79,9 @@ export default function WeddingFilms() {
 
         {/* Film Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {filmsData.map((film) => (
+          {films.filter((f) => !f.hidden).map((film, idx) => (
             <motion.div
-              key={film.id}
+              key={film._id ?? film.id ?? idx}
               initial={{ opacity: 0, y: 35 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -128,41 +149,74 @@ export default function WeddingFilms() {
               <X className="w-6 h-6" />
             </button>
 
-            <div
+             <div
               className="relative max-w-5xl w-full aspect-[16/9] bg-[#464239] rounded-3xl overflow-hidden border border-white/20 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <Image
-                src={activeFilm.thumbnail}
-                alt={activeFilm.couple}
-                fill
-                className="object-cover filter brightness-90 animate-pulse-slow"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#2d2a24]/90 via-transparent to-black/40 flex flex-col justify-between p-8 text-white">
-                <div className="flex justify-between items-center">
-                  <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-white font-sans-clean">
-                    <Sparkles className="w-4 h-4" /> Premiering Film Showcase
-                  </span>
-                  <button
-                    onClick={() => setIsMuted(!isMuted)}
-                    className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white"
-                  >
-                    {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-                  </button>
-                </div>
+              {activeFilm.videoUrl ? (
+                activeFilm.videoUrl.includes("youtube.com") ||
+                activeFilm.videoUrl.includes("youtu.be") ||
+                activeFilm.videoUrl.includes("vimeo.com") ? (
+                  <iframe
+                    src={
+                      activeFilm.videoUrl.includes("youtube.com") ||
+                      activeFilm.videoUrl.includes("youtu.be")
+                        ? `https://www.youtube.com/embed/${
+                            activeFilm.videoUrl.split("v=")[1]?.split("&")[0] ||
+                            activeFilm.videoUrl.split("/").pop()
+                          }?autoplay=1&mute=${isMuted ? 1 : 0}`
+                        : `https://player.vimeo.com/video/${activeFilm.videoUrl
+                            .split("/")
+                            .pop()}?autoplay=1&muted=${isMuted ? 1 : 0}`
+                    }
+                    className="w-full h-full border-none"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <video
+                    src={activeFilm.videoUrl}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    controls
+                    muted={isMuted}
+                  />
+                )
+              ) : (
+                <>
+                  <Image
+                    src={activeFilm.thumbnail}
+                    alt={activeFilm.couple}
+                    fill
+                    className="object-cover filter brightness-90 animate-pulse-slow"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#2d2a24]/90 via-transparent to-black/40 flex flex-col justify-between p-8 text-white">
+                    <div className="flex justify-between items-center">
+                      <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-white font-sans-clean">
+                        <Sparkles className="w-4 h-4" /> Premiering Film Showcase
+                      </span>
+                      <button
+                        onClick={() => setIsMuted(!isMuted)}
+                        className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md text-white"
+                      >
+                        {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                      </button>
+                    </div>
 
-                <div className="max-w-2xl">
-                  <span className="text-xs uppercase tracking-[0.3em] text-white/80 font-sans-clean">
-                    {activeFilm.location}
-                  </span>
-                  <h3 className="font-serif-primary text-4xl md:text-5xl font-light text-white mt-1 mb-3">
-                    {activeFilm.couple}
-                  </h3>
-                  <p className="font-sans-clean text-xs md:text-sm text-zinc-200 leading-relaxed font-light">
-                    {activeFilm.description}
-                  </p>
-                </div>
-              </div>
+                    <div className="max-w-2xl">
+                      <span className="text-xs uppercase tracking-[0.3em] text-white/80 font-sans-clean">
+                        {activeFilm.location}
+                      </span>
+                      <h3 className="font-serif-primary text-4xl md:text-5xl font-light text-white mt-1 mb-3">
+                        {activeFilm.couple}
+                      </h3>
+                      <p className="font-sans-clean text-xs md:text-sm text-zinc-200 leading-relaxed font-light">
+                        {activeFilm.description}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </motion.div>
         )}
