@@ -30,7 +30,7 @@ export default function Hero({ onOpenBooking }: HeroProps) {
     offset: ["start start", "end start"],
   });
 
-  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
   const opacityContent = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
 
   useEffect(() => {
@@ -77,11 +77,9 @@ export default function Hero({ onOpenBooking }: HeroProps) {
             initial={false}
             animate={{
               opacity: currentSlide === idx ? 1 : 0,
-              scale: currentSlide === idx ? 1 : 1.05,
             }}
             transition={{
-              opacity: { duration: 1.4, ease: "easeInOut" },
-              scale: { duration: 3.5, ease: "easeOut" },
+              opacity: { duration: 1.1, ease: "easeInOut" },
             }}
             className="absolute inset-0 w-full h-full"
           >
@@ -90,7 +88,8 @@ export default function Hero({ onOpenBooking }: HeroProps) {
               alt={`KOPIKO Hero Slide ${idx + 1}`}
               fill
               priority={idx === 0}
-              quality={95}
+              quality={idx === 0 ? 85 : 70}
+              sizes="100vw"
               className={`object-cover filter brightness-[0.82] contrast-[1.03] ${
                 idx === 2 || idx === 4
                   ? "object-[center_18%] md:object-[center_50%]"

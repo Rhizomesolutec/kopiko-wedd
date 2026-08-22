@@ -100,9 +100,16 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="w-full max-w-2xl h-full bg-[#464239] text-white overflow-y-auto p-8 md:p-14 border-l border-white/15 flex flex-col justify-between"
+            data-lenis-prevent
+            className="w-full max-w-2xl h-dvh max-h-dvh bg-[#464239] text-white border-l border-white/15 flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
           >
+            <div
+              data-lenis-prevent
+              className="flex-1 min-h-0 overflow-y-auto overscroll-y-contain touch-pan-y p-8 md:p-14"
+            >
             {/* Modal Header */}
             <div>
               <div className="flex justify-between items-center mb-8">
@@ -126,7 +133,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
                     We accept a limited number of commissions each year to ensure framing love as art for every couple.
                   </p>
 
-                  <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                  <form onSubmit={handleSubmit} className="flex flex-col gap-6 pb-4">
                     {/* Name & Email */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div className="flex flex-col gap-2">
@@ -285,6 +292,7 @@ export default function BookingModal({ isOpen, onClose }: BookingModalProps) {
             <div className="border-t border-white/15 pt-6 mt-8 flex justify-between items-center text-[10px] uppercase tracking-[0.2em] text-amber-200/60 font-sans-clean">
               <span>KOPIKO Studio</span>
               <span>100% Confidential</span>
+            </div>
             </div>
           </motion.div>
         </motion.div>

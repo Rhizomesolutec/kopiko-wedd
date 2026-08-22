@@ -119,7 +119,7 @@ export default function InstagramMasonry() {
         </div>
 
         {/* Masonry Grid */}
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+        <div className="columns-2 lg:columns-3 gap-3 sm:gap-6 space-y-3 sm:space-y-6">
           {instaItems.slice(0, visibleCount).map((item, index) => (
             <motion.a
               href={item.postUrl}
